@@ -1,8 +1,7 @@
-use std::fmt::Display;
+use std::fmt;
 use reqwest::Response;
 use serde_derive::Deserialize;
 
-use super::bot_methods::TelegramBotMethods;
 use super::types::update;
 use super::TG_API;
 
@@ -17,11 +16,9 @@ pub struct LongPullTelBot {
     last_update_id: std::cell::Cell<i64>,
 }
 
-impl TelegramBotMethods for LongPullTelBot {}
-
 impl LongPullTelBot {
 
-    pub fn new<T: Display>(bot_token: T) -> Self {
+    pub fn new<T: fmt::Display>(bot_token: T) -> Self {
         LongPullTelBot {
             bot_token: bot_token.to_string(),
             last_update_id: std::cell::Cell::new(0)
@@ -46,9 +43,9 @@ impl LongPullTelBot {
         ).await
     }
 
-    pub async fn get_updates(&self) -> Result<Vec<update::Update>, ()> {
+    pub async fn get_updates(&self, timeout: u64) -> Result<Vec<update::Update>, ()> {
 
-        let response_result = self.request_get_updates(1).await;
+        let response_result = self.request_get_updates(timeout).await;
 
         if let Ok(response) = response_result {
 

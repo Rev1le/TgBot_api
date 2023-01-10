@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use serde_json::Value;
 use async_trait::async_trait;
 
@@ -19,11 +18,15 @@ pub trait TelegramBotMethods
             params
         );
 
+        if let &Err(e) = &url {
+            return Err(format!("{}", e))
+        }
+
         let response_result = reqwest::get(url.unwrap()).await;
 
         if let Ok(response) = response_result {
             return Ok(response.json::<Value>().await.unwrap());
         }
-        Err(String::from("error"))
+        Err(String::from("Response error"))
     }
 }
